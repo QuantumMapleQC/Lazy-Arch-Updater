@@ -1,31 +1,29 @@
 # Lazy Arch Updater (LAU)
 
-A minimal user-level systemd service and timer that automatically updates an Arch Linux system using `pacman` and `yay`, with desktop notifications on success or failure.
+A minimal user-level systemd service and timer that automatically updates an Arch Linux system using `pacman` and `yay`.
 
 ---
 
 ## Overview
 
-This script automates daily system updates for both official and AUR packages and sends desktop notifications at the start and end of the process. It is designed to work on setups that support standard desktop notifications through `notify-send`.
-
+This script daily updates your system either if your using Arch Linux or an arch based distro will work the way its supposed to.
 ---
 
 ## Compatibility
 
 Confirmed and likely compatibility based on standard notification daemons:
 
-| Environment          | Status      | Notes                                 |
+| Environment          | Status      | Notes                               |
 |----------------------|-------------|-------------------------------------|
 | DWM + dunst          | Confirmed   | Tested                              |
 | Openbox + dunst      | Confirmed   | Tested                              |
-| KDE Plasma           | Likely      | Uses built-in notification support  |
-| GNOME                | Likely      | Uses native notification system     |
-| XFCE                 | Likely      | Requires `xfce4-notifyd`             |
-| Cinnamon             | Likely      | Default daemon supports notifications |
-| i3 / Sway            | Likely      | Requires something like `dunst`     |
-| MATE                 | Untested    | Should work if notification daemon present |
+| KDE Plasma           | Likely      | Unknown                             |
+| GNOME                | Likely      | Gnome is garbage use something else |
+| XFCE                 | Likely      | Unknown                             |
+| Cinnamon             | Likely      | Unknown                             |
+| i3 / Sway            | Likely      | Unknown                             |
+| MATE                 | Untested    | Unknown                             |
 
-> You’ll need a working notification daemon such as `dunst`, `xfce4-notifyd`, or your DE’s built-in one.
 
 ---
 
@@ -45,7 +43,7 @@ This script will:
 
     Detect your window manager or desktop environment
 
-    Check for required dependencies (git, yay, sudo, notify-send or fallback)
+    Check for required dependencies (git, yay, or fallback)
 
     Clone or update the repository in ~/.local/share/lazy-arch-updater
 
@@ -53,6 +51,5 @@ This script will:
 
     Log all update output to ~/.local/share/lazy-arch-updater/log.txt
 
-    Send desktop notifications on success or failure
 
 
