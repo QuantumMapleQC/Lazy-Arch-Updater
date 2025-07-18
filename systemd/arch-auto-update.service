@@ -1,0 +1,6 @@
+[Unit]
+Description=Lazy Arch Updater Service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/lazy-arch-updater/LAU.sh
