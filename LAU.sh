@@ -135,13 +135,29 @@ run_update() {
     echo "[*] Running yay -Syu ..."
     yay -Syu --noconfirm
 
+    # Check and run paru update if installed
+    if command -v paru >/dev/null 2>&1; then
+      echo "[*] Running paru -Syu ..."
+      paru -Syu --noconfirm
+    else
+      echo "[*] paru not found; skipping paru update."
+    fi
+
+    # Check and run flatpak update if installed
+    if command -v flatpak >/dev/null 2>&1; then
+      echo "[*] Running flatpak update ..."
+      flatpak update -y
+    else
+      echo "[*] flatpak not found; skipping flatpak update."
+    fi
+
     echo "===== Update completed ====="
     echo
   } 2>&1 | tee -a "$LOG_FILE"
 
   if [[ ${PIPESTATUS[0]} -eq 0 && ${PIPESTATUS[1]} -eq 0 ]]; then
     echo "[SUCCESS] Update finished without errors."
-    [[ "$mode" == "--systemd" ]] && echo "✅ System updated! This happens automatically every time you reboot."
+    [[ "$mode" == "--systemd" ]] && echo "System updated automatically."
   else
     echo -e "\e[31m[ERROR]\e[0m Update finished with errors. Check logs."
   fi
@@ -173,9 +189,10 @@ Detected environment: $WM_DE
 Features:
 - Auto clones/updates its repo.
 - Runs 'sudo pacman -Syu' and 'yay -Syu' with logging.
+- Supports paru and flatpak updates if installed.
 - Supports various window managers and desktop environments.
 - Simple arrow-key navigated terminal interface.
-- Installable systemd user timer for daily auto updates.
+- Installable systemd user timer for auto updates every 3 to 5 hours.
 
 Make sure required dependencies are installed before use.
 
@@ -186,6 +203,14 @@ EOF
 install_systemd_units() {
   SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
   mkdir -p "$SYSTEMD_USER_DIR"
+
+  echo "Cleaning up any existing Lazy Arch Updater timers..."
+
+  # Stop and disable any existing timer (old or new)
+  systemctl --user disable --now arch-auto-update.timer 2>/dev/null || true
+
+  # Reload systemd user daemon to pick up changes
+  systemctl --user daemon-reload
 
   echo "Installing systemd user units..."
 
@@ -200,11 +225,12 @@ EOF
 
   cat > "$SYSTEMD_USER_DIR/arch-auto-update.timer" << EOF
 [Unit]
-Description=Run Lazy Arch Updater daily
+Description=Run Lazy Arch Updater every 3 to 5 hours
 
 [Timer]
 OnBootSec=5min
-OnUnitActiveSec=1d
+OnUnitActiveSec=3h
+RandomizedDelaySec=2h
 Persistent=true
 
 [Install]
@@ -221,7 +247,7 @@ EOF
   fi
 
   echo "Systemd timer installed and started."
-  echo "This timer will run daily and persist across reboots."
+  echo "This timer will run automatically every 3 to 5 hours and persist across reboots."
   pause
 }
 
